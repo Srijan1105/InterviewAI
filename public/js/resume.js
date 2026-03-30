@@ -55,16 +55,27 @@ async function analyzeResume() {
   if (!selectedFile) return;
   const btn = document.getElementById('analyzeBtn');
   btn.disabled = true;
-  btn.textContent = '🔍 Analyzing resume...';
+  btn.textContent = '🔍 Reading resume...';
 
   try {
-    const formData = new FormData();
-    formData.append('resume', selectedFile);
+    // Read PDF as text using FileReader (base64) then send text to API
+    const arrayBuffer = await selectedFile.arrayBuffer();
+    // Use pdf.js CDN to extract text client-side
+    const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+    const pdf = await loadingTask.promise;
+    let fullText = '';
+    for (let i = 1; i <= Math.min(pdf.numPages, 5); i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      fullText += content.items.map(item => item.str).join(' ') + '\n';
+    }
+
+    btn.textContent = '🔍 Analyzing with AI...';
 
     const res = await fetch('/api/resume/upload', {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${getToken()}` },
-      body: formData
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+      body: JSON.stringify({ resumeText: fullText })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
@@ -75,7 +86,7 @@ async function analyzeResume() {
 
     const list = document.getElementById('questionList');
     list.innerHTML = data.questions.map((q, i) => `
-      <div class="question-item" onclick="copyQuestion('${q.replace(/'/g, "\\'")}')">
+      <div class="question-item" onclick="copyQuestion(this)" data-q="${q.replace(/"/g,'&quot;')}">
         <div class="question-num">${i + 1}</div>
         <div style="flex:1;font-size:0.92rem;">${q}</div>
         <span style="font-size:0.75rem;color:var(--text-muted);">click to copy</span>
@@ -84,7 +95,7 @@ async function analyzeResume() {
 
     document.getElementById('uploadSection').classList.add('hidden');
     document.getElementById('resultsSection').classList.remove('hidden');
-    showToast('Questions generated successfully!', 'success');
+    showToast('Questions generated!', 'success');
   } catch (err) {
     showToast(err.message, 'error');
   } finally {
@@ -93,8 +104,9 @@ async function analyzeResume() {
   }
 }
 
-function copyQuestion(q) {
-  navigator.clipboard.writeText(q).then(() => showToast('Question copied!', 'success'));
+function copyQuestion(el) {
+  const q = el.dataset.q;
+  navigator.clipboard.writeText(q).then(() => showToast('Copied!', 'success'));
 }
 
 function startResumeInterview() {
