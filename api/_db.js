@@ -1,12 +1,13 @@
 const mongoose = require('mongoose');
 
-let cached = global._mongoConn;
+let isConnected = false;
 
 async function connectDB() {
-  if (cached && mongoose.connection.readyState === 1) return cached;
-  cached = await mongoose.connect(process.env.MONGODB_URI);
-  global._mongoConn = cached;
-  return cached;
+  if (isConnected && mongoose.connection.readyState === 1) return;
+  await mongoose.connect(process.env.MONGODB_URI, {
+    serverSelectionTimeoutMS: 5000
+  });
+  isConnected = true;
 }
 
 module.exports = connectDB;

@@ -3,9 +3,6 @@ const Groq = require('groq-sdk');
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-// Vercel has 4.5MB body limit by default
-export const config = { api: { bodyParser: { sizeLimit: '5mb' } } };
-
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');

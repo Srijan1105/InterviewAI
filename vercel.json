@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "api/**/*.js", "use": "@vercel/node" },
-    { "src": "public/**", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/public/$1" }
+  "rewrites": [
+    { "source": "/api/auth/register", "destination": "/api/auth/register" },
+    { "source": "/api/auth/login", "destination": "/api/auth/login" },
+    { "source": "/api/interview/chat", "destination": "/api/interview/chat" },
+    { "source": "/api/interview/sessions", "destination": "/api/interview/sessions" },
+    { "source": "/api/resume/upload", "destination": "/api/resume/upload" },
+    { "source": "/api/progress", "destination": "/api/progress/index" },
+    { "source": "/(.*)", "destination": "/public/$1" }
   ]
 }
