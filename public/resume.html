@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resume Upload - InterviewAI</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand"><div class="logo-icon">🎯</div>InterviewAI</div>
+  <div class="nav-links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="interview.html">Mock Interview</a>
+    <a href="resume.html" class="active">Resume</a>
+    <a href="coding.html">Coding Interview</a>
+    <a href="voice.html">Voice</a>
+    <a href="progress.html">Progress</a>
+  </div>
+  <div class="nav-actions">
+    <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<div style="max-width:900px;margin:2rem auto;padding:0 1.5rem;">
+  <h1 style="font-size:1.8rem;font-weight:800;margin-bottom:0.5rem;">📄 Resume-Based Questions</h1>
+  <p class="text-muted mb-3">Upload your resume and get AI-generated interview questions tailored to your experience</p>
+
+  <!-- UPLOAD -->
+  <div id="uploadSection">
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()"
+      ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+      <div class="upload-icon">📄</div>
+      <h3>Drop your resume here</h3>
+      <p>or click to browse — PDF files only, max 5MB</p>
+      <input type="file" id="fileInput" accept=".pdf" class="hidden" onchange="handleFileSelect(event)" />
+    </div>
+
+    <div id="filePreview" class="hidden" style="margin-top:1rem;">
+      <div class="card" style="display:flex;align-items:center;gap:1rem;">
+        <div style="font-size:2rem;">📄</div>
+        <div style="flex:1;">
+          <div id="fileName" style="font-weight:600;"></div>
+          <div id="fileSize" class="text-muted" style="font-size:0.82rem;"></div>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="clearFile()" style="background:rgba(255,101,132,0.15);color:var(--danger);border:1px solid rgba(255,101,132,0.3);">Remove</button>
+      </div>
+      <button class="btn btn-primary btn-full mt-2" id="analyzeBtn" onclick="analyzeResume()">🔍 Analyze Resume & Generate Questions</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="resultsSection" class="hidden mt-3">
+    <div class="grid-2 mb-3">
+      <div class="card">
+        <h3 style="margin-bottom:0.75rem;">👤 Candidate Profile</h3>
+        <p id="candidateSummary" class="text-muted" style="font-size:0.9rem;line-height:1.7;"></p>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:0.75rem;">📊 Questions Generated</h3>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+          <div style="text-align:center;flex:1;">
+            <div style="font-size:2rem;font-weight:800;color:var(--primary)" id="qCount">0</div>
+            <div class="text-muted" style="font-size:0.82rem;">Total Questions</div>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-full mt-2" onclick="startResumeInterview()">🚀 Practice These Questions</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Generated Interview Questions</h3>
+        <button class="btn btn-secondary btn-sm" onclick="resetUpload()">Upload New Resume</button>
+      </div>
+      <div class="question-list" id="questionList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="js/main.js"></script>
+<script src="js/resume.js"></script>
+</body>
+</html>

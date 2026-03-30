@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - InterviewAI</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand">
+    <div class="logo-icon">🎯</div>
+    InterviewAI
+  </div>
+  <div class="nav-links">
+    <a href="dashboard.html" class="active">Dashboard</a>
+    <a href="interview.html">Mock Interview</a>
+    <a href="resume.html">Resume</a>
+    <a href="coding.html">Coding Interview</a>
+    <a href="voice.html">Voice</a>
+    <a href="progress.html">Progress</a>
+  </div>
+  <div class="nav-actions">
+    <span id="userName" style="color:var(--text-muted);font-size:0.88rem;"></span>
+    <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="dashboard-layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Main</div>
+      <a href="dashboard.html" class="sidebar-link active"><span class="icon">🏠</span> Dashboard</a>
+      <a href="interview.html" class="sidebar-link"><span class="icon">🤖</span> Mock Interview</a>
+      <a href="resume.html" class="sidebar-link"><span class="icon">📄</span> Resume Upload</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Practice</div>
+      <a href="coding.html" class="sidebar-link"><span class="icon">💻</span> Coding Editor</a>
+      <a href="voice.html" class="sidebar-link"><span class="icon">🎙️</span> Voice Interview</a>
+      <a href="progress.html" class="sidebar-link"><span class="icon">📊</span> Progress</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Account</div>
+      <a href="#" class="sidebar-link" onclick="logout()"><span class="icon">🚪</span> Logout</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+    <div style="margin-bottom:2rem;">
+      <h1 style="font-size:1.8rem;font-weight:800;">Welcome back, <span id="greetName" class="gradient-text">there</span> 👋</h1>
+      <p class="text-muted">Ready to practice? Pick a mode and let's get started.</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(108,99,255,0.15);">🎯</div>
+        <div class="stat-info">
+          <div class="value" id="totalSessions">0</div>
+          <div class="label">Total Sessions</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(0,212,170,0.15);">✅</div>
+        <div class="stat-info">
+          <div class="value" id="completedSessions">0</div>
+          <div class="label">Completed</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(255,209,102,0.15);">⭐</div>
+        <div class="stat-info">
+          <div class="value" id="avgScore">-</div>
+          <div class="label">Avg Score</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(255,101,132,0.15);">🔥</div>
+        <div class="stat-info">
+          <div class="value" id="streak">0</div>
+          <div class="label">Day Streak</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUICK START -->
+    <div class="grid-2" style="margin-bottom:2rem;">
+      <div class="card">
+        <div class="card-header">
+          <h3>Quick Start</h3>
+        </div>
+        <div class="role-grid" id="roleGrid">
+          <div class="role-card selected" onclick="selectRole(this,'Software Developer')">
+            <div class="role-icon">💻</div>
+            <div class="role-name">Software Dev</div>
+          </div>
+          <div class="role-card" onclick="selectRole(this,'Web Developer')">
+            <div class="role-icon">🌐</div>
+            <div class="role-name">Web Dev</div>
+          </div>
+          <div class="role-card" onclick="selectRole(this,'Data Scientist')">
+            <div class="role-icon">📊</div>
+            <div class="role-name">Data Scientist</div>
+          </div>
+          <div class="role-card" onclick="selectRole(this,'ML Engineer')">
+            <div class="role-icon">🧠</div>
+            <div class="role-name">ML Engineer</div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="startInterview()">🚀 Start Mock Interview</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Your Scores</h3>
+          <span class="text-muted" style="font-size:0.82rem;">Latest session</span>
+        </div>
+        <div id="scoreDisplay">
+          <div class="score-bar-wrap">
+            <div class="score-bar-label"><span>Technical</span><span id="techScore">-</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill" id="techBar" style="width:0%;background:var(--primary)"></div></div>
+          </div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-label"><span>Communication</span><span id="commScore">-</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill" id="commBar" style="width:0%;background:var(--secondary)"></div></div>
+          </div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-label"><span>Confidence</span><span id="confScore">-</span></div>
+            <div class="score-bar-track"><div class="score-bar-fill" id="confBar" style="width:0%;background:var(--warning)"></div></div>
+          </div>
+          <p class="text-muted mt-2" id="noScoreMsg" style="font-size:0.85rem;text-align:center;">Complete an interview to see scores</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEATURE CARDS -->
+    <h3 style="margin-bottom:1rem;font-weight:700;">All Features</h3>
+    <div class="features-grid">
+      <a href="interview.html" class="feature-card">
+        <div class="feature-icon" style="background:rgba(108,99,255,0.15)">🤖</div>
+        <h3>AI Mock Interview</h3>
+        <p>Chat-based interview with real-time AI evaluation and follow-up questions.</p>
+      </a>
+      <a href="resume.html" class="feature-card">
+        <div class="feature-icon" style="background:rgba(0,212,170,0.15)">📄</div>
+        <h3>Resume Questions</h3>
+        <p>Upload your PDF resume and get personalized interview questions.</p>
+      </a>
+      <a href="coding.html" class="feature-card">
+        <div class="feature-icon" style="background:rgba(255,209,102,0.15)">💻</div>
+        <h3>Coding Interview</h3>
+        <p>Solve DSA problems with an online editor and test case runner.</p>
+      </a>
+      <a href="voice.html" class="feature-card">
+        <div class="feature-icon" style="background:rgba(255,101,132,0.15)">🎙️</div>
+        <h3>Voice Interview</h3>
+        <p>Speak your answers and get AI feedback on communication.</p>
+        <span class="badge badge-hot">⭐ IMPRESSIVE</span>
+      </a>
+      <a href="progress.html" class="feature-card">
+        <div class="feature-icon" style="background:rgba(108,99,255,0.15)">📈</div>
+        <h3>Progress Tracker</h3>
+        <p>Charts showing your improvement over time with weak area analysis.</p>
+      </a>
+    </div>
+  </main>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="js/main.js"></script>
+<script>
+  // Auth guard
+  if (!getToken()) window.location.href = 'index.html';
+
+  const user = getUser();
+  if (user) {
+    document.getElementById('userName').textContent = user.name;
+    document.getElementById('greetName').textContent = user.name.split(' ')[0];
+  }
+
+  let selectedRole = 'Software Developer';
+
+  function selectRole(el, role) {
+    document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedRole = role;
+  }
+
+  function startInterview() {
+    window.location.href = `interview.html?role=${encodeURIComponent(selectedRole)}`;
+  }
+
+  // Load progress stats
+  async function loadStats() {
+    try {
+      const res = await fetch('/api/progress', { headers: authHeaders() });
+      const data = await res.json();
+      document.getElementById('totalSessions').textContent = data.totalSessions || 0;
+      document.getElementById('completedSessions').textContent = data.completedSessions || 0;
+
+      if (data.averages && data.completedSessions > 0) {
+        const avg = ((data.averages.technical + data.averages.communication + data.averages.confidence) / 3).toFixed(1);
+        document.getElementById('avgScore').textContent = avg + '/10';
+        document.getElementById('noScoreMsg').style.display = 'none';
+
+        document.getElementById('techScore').textContent = data.averages.technical + '/10';
+        document.getElementById('commScore').textContent = data.averages.communication + '/10';
+        document.getElementById('confScore').textContent = data.averages.confidence + '/10';
+        document.getElementById('techBar').style.width = (data.averages.technical * 10) + '%';
+        document.getElementById('commBar').style.width = (data.averages.communication * 10) + '%';
+        document.getElementById('confBar').style.width = (data.averages.confidence * 10) + '%';
+      }
+    } catch (e) { console.error(e); }
+  }
+
+  loadStats();
+</script>
+</body>
+</html>

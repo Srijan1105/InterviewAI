@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coding Interview - InterviewAI</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand"><div class="logo-icon">🎯</div>InterviewAI</div>
+  <div class="nav-links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="interview.html">Mock Interview</a>
+    <a href="resume.html">Resume</a>
+    <a href="coding.html" class="active">Coding Interview</a>
+    <a href="voice.html">Voice</a>
+    <a href="progress.html">Progress</a>
+  </div>
+  <div class="nav-actions">
+    <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<div style="padding:1.5rem;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+    <div>
+      <h1 style="font-size:1.6rem;font-weight:800;">💻 Coding Interview</h1>
+      <p class="text-muted">Solve DSA problems and get AI feedback</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <select class="form-control" id="langSelect" style="width:140px;" onchange="setLanguage()">
+        <option value="javascript">JavaScript</option>
+        <option value="python">Python</option>
+        <option value="java">Java</option>
+        <option value="cpp">C++</option>
+      </select>
+      <select class="form-control" id="difficultySelect" style="width:130px;" onchange="loadProblem()">
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+      <button class="btn btn-secondary btn-sm" id="newProblemBtn" onclick="loadProblem()">🔀 New Problem</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;height:calc(100vh - 180px);">
+    <!-- PROBLEM PANEL -->
+    <div style="display:flex;flex-direction:column;gap:1rem;overflow-y:auto;">
+      <div class="card" id="problemCard">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+          <span id="problemNum" style="font-size:0.8rem;color:var(--text-muted);">Problem #1</span>
+          <span id="diffBadge" class="badge badge-new">Easy</span>
+        </div>
+        <h3 id="problemTitle" style="font-size:1.1rem;font-weight:700;margin-bottom:0.75rem;">Two Sum</h3>
+        <p id="problemDesc" style="font-size:0.9rem;color:var(--text-muted);line-height:1.7;margin-bottom:1rem;"></p>
+        <div id="examples" style="font-size:0.88rem;"></div>
+        <div id="constraints" style="margin-top:1rem;font-size:0.82rem;color:var(--text-muted);"></div>
+      </div>
+
+      <!-- TEST CASES -->
+      <div class="card">
+        <h4 style="margin-bottom:1rem;">Test Cases</h4>
+        <div id="testCases" style="display:flex;flex-direction:column;gap:0.5rem;"></div>
+      </div>
+
+      <!-- AI HINT -->
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+          <h4>AI Hint</h4>
+          <button class="btn btn-outline btn-sm" id="hintBtn" onclick="getHint()">💡 Get Hint</button>
+        </div>
+        <p id="hintText" class="text-muted" style="font-size:0.88rem;line-height:1.6;">Click "Get Hint" for a nudge in the right direction.</p>
+      </div>
+    </div>
+
+    <!-- EDITOR PANEL -->
+    <div class="editor-panel">
+      <div class="editor-toolbar">
+        <span style="font-size:0.85rem;font-weight:600;" id="editorLang">JavaScript</span>
+        <div style="flex:1;"></div>
+        <button class="btn btn-secondary btn-sm" onclick="resetCode()">Reset</button>
+        <button class="btn btn-success btn-sm" onclick="runCode()">▶ Run</button>
+        <button class="btn btn-primary btn-sm" onclick="submitCode()">Submit</button>
+      </div>
+      <textarea id="code-editor" spellcheck="false"></textarea>
+      <div style="background:var(--bg2);border-top:1px solid var(--border);padding:0.75rem 1rem;">
+        <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:0.5rem;">Output</div>
+        <div class="output-panel" id="outputPanel">// Run your code to see output</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="js/main.js"></script>
+<script src="js/problems.js?v=3"></script>
+<script src="js/coding.js?v=3"></script>
+</body>
+</html>

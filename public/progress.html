@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Progress - InterviewAI</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand"><div class="logo-icon">🎯</div>InterviewAI</div>
+  <div class="nav-links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="interview.html">Mock Interview</a>
+    <a href="resume.html">Resume</a>
+    <a href="coding.html">Coding Interview</a>
+    <a href="voice.html">Voice</a>
+    <a href="progress.html" class="active">Progress</a>
+  </div>
+  <div class="nav-actions">
+    <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<div style="max-width:1100px;margin:2rem auto;padding:0 1.5rem;">
+  <h1 style="font-size:1.8rem;font-weight:800;margin-bottom:0.5rem;">📊 Progress Tracker</h1>
+  <p class="text-muted mb-3">Track your improvement over time and identify areas to focus on</p>
+
+  <!-- STATS -->
+  <div class="stats-row mb-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:rgba(108,99,255,0.15);">🎯</div>
+      <div class="stat-info">
+        <div class="value" id="pTotal">0</div>
+        <div class="label">Total Sessions</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:rgba(0,212,170,0.15);">🧠</div>
+      <div class="stat-info">
+        <div class="value" id="pTech">-</div>
+        <div class="label">Avg Technical</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:rgba(255,209,102,0.15);">💬</div>
+      <div class="stat-info">
+        <div class="value" id="pComm">-</div>
+        <div class="label">Avg Communication</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:rgba(255,101,132,0.15);">💪</div>
+      <div class="stat-info">
+        <div class="value" id="pConf">-</div>
+        <div class="label">Avg Confidence</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2 mb-3">
+    <!-- LINE CHART -->
+    <div class="chart-container">
+      <div class="chart-title">📈 Score Improvement Over Time</div>
+      <canvas id="lineChart" height="220"></canvas>
+    </div>
+
+    <!-- RADAR CHART -->
+    <div class="chart-container">
+      <div class="chart-title">🎯 Skills Radar</div>
+      <canvas id="radarChart" height="220"></canvas>
+    </div>
+  </div>
+
+  <!-- BAR CHART -->
+  <div class="chart-container mb-3">
+    <div class="chart-title">📊 Session-by-Session Breakdown</div>
+    <canvas id="barChart" height="120"></canvas>
+  </div>
+
+  <!-- WEAK AREAS -->
+  <div class="grid-2">
+    <div class="card">
+      <h3 style="margin-bottom:1rem;">⚠️ Areas to Improve</h3>
+      <div id="weakAreas"></div>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:1rem;">✅ Strong Areas</h3>
+      <div id="strongAreas"></div>
+    </div>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div id="emptyState" class="hidden" style="text-align:center;padding:4rem 2rem;">
+    <div style="font-size:4rem;margin-bottom:1rem;">📊</div>
+    <h3 style="margin-bottom:0.5rem;">No data yet</h3>
+    <p class="text-muted mb-3">Complete a mock interview to start tracking your progress</p>
+    <a href="interview.html" class="btn btn-primary">Start Mock Interview</a>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="js/main.js"></script>
+<script src="js/progress.js"></script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InterviewAI - Smart Interview Preparation</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-brand">
+    <div class="logo-icon">🎯</div>
+    InterviewAI
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how-it-works">How it works</a>
+  </div>
+  <div class="nav-actions">
+    <button class="btn btn-secondary btn-sm" onclick="openModal('login')">Login</button>
+    <button class="btn btn-primary btn-sm" onclick="openModal('register')">Get Started</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">✨ AI-Powered Interview Coach</div>
+    <h1>Ace Your Next Interview with <span class="gradient-text">AI Coaching</span></h1>
+    <p>Practice mock interviews, get instant AI feedback, analyze your performance, and land your dream job with confidence.</p>
+    <div class="hero-actions">
+      <button class="btn btn-primary btn-lg" onclick="openModal('register')">🚀 Start Practicing Free</button>
+      <button class="btn btn-secondary btn-lg" onclick="openModal('login')">Sign In</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">10K+</div>
+        <div class="stat-label">Questions Generated</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">5+</div>
+        <div class="stat-label">Interview Modes</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">AI</div>
+        <div class="stat-label">Powered Analysis</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section" id="features">
+  <div class="section-title">
+    <h2>Everything You Need to <span class="gradient-text">Prepare</span></h2>
+    <p>From resume analysis to voice interviews — we've got every angle covered</p>
+  </div>
+  <div class="features-grid">
+    <a href="resume.html" class="feature-card" onclick="requireAuth(event, 'resume.html')">
+      <div class="feature-icon" style="background:rgba(108,99,255,0.15)">📄</div>
+      <h3>Resume-Based Questions</h3>
+      <p>Upload your resume and get personalized interview questions tailored to your experience and skills.</p>
+    </a>
+    <a href="interview.html" class="feature-card" onclick="requireAuth(event, 'interview.html')">
+      <div class="feature-icon" style="background:rgba(0,212,170,0.15)">🤖</div>
+      <h3>AI Mock Interview</h3>
+      <p>Chat with an AI interviewer that asks technical, HR, and behavioral questions with real-time evaluation.</p>
+    </a>
+    <a href="progress.html" class="feature-card" onclick="requireAuth(event, 'progress.html')">
+      <div class="feature-icon" style="background:rgba(255,209,102,0.15)">📊</div>
+      <h3>Performance Dashboard</h3>
+      <p>Track your confidence, communication, and technical scores with detailed improvement suggestions.</p>
+    </a>
+    <a href="interview.html?mode=role" class="feature-card" onclick="requireAuth(event, 'interview.html?mode=role')">
+      <div class="feature-icon" style="background:rgba(255,101,132,0.15)">🎭</div>
+      <h3>Role-Based Prep</h3>
+      <p>Choose your target role — Software Dev, Data Scientist, ML Engineer — and get tailored questions.</p>
+    </a>
+    <a href="coding.html" class="feature-card" onclick="requireAuth(event, 'coding.html')">
+      <div class="feature-icon" style="background:rgba(108,99,255,0.15)">💻</div>
+      <h3>Coding Interview</h3>
+      <p>Solve DSA problems in an online code editor with test case validation and AI hints.</p>
+      <span class="badge badge-new">NEW</span>
+    </a>
+    <a href="voice.html" class="feature-card" onclick="requireAuth(event, 'voice.html')">
+      <div class="feature-icon" style="background:rgba(0,212,170,0.15)">🎙️</div>
+      <h3>Voice Interview</h3>
+      <p>Speak your answers aloud and get AI evaluation on your communication and confidence.</p>
+      <span class="badge badge-hot">⭐ IMPRESSIVE</span>
+    </a>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section style="padding:4rem 2rem; background:var(--bg2);" id="how-it-works">
+  <div style="max-width:900px;margin:0 auto;">
+    <div class="section-title">
+      <h2>How It <span class="gradient-text">Works</span></h2>
+      <p>Three simple steps to interview success</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:2rem;margin-top:2rem;">
+      <div style="text-align:center;padding:2rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;">📝</div>
+        <div style="font-size:0.8rem;color:var(--primary);font-weight:700;margin-bottom:0.5rem;">STEP 1</div>
+        <h3 style="margin-bottom:0.5rem;">Create Your Profile</h3>
+        <p style="color:var(--text-muted);font-size:0.9rem;">Sign up, select your target role, and optionally upload your resume.</p>
+      </div>
+      <div style="text-align:center;padding:2rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;">🎯</div>
+        <div style="font-size:0.8rem;color:var(--primary);font-weight:700;margin-bottom:0.5rem;">STEP 2</div>
+        <h3 style="margin-bottom:0.5rem;">Practice Interviews</h3>
+        <p style="color:var(--text-muted);font-size:0.9rem;">Run mock interviews, solve coding problems, or try voice interviews.</p>
+      </div>
+      <div style="text-align:center;padding:2rem;">
+        <div style="font-size:3rem;margin-bottom:1rem;">📈</div>
+        <div style="font-size:0.8rem;color:var(--primary);font-weight:700;margin-bottom:0.5rem;">STEP 3</div>
+        <h3 style="margin-bottom:0.5rem;">Track & Improve</h3>
+        <p style="color:var(--text-muted);font-size:0.9rem;">Review your scores, identify weak areas, and watch your progress grow.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="padding:5rem 2rem;text-align:center;">
+  <h2 style="font-size:2.2rem;font-weight:800;margin-bottom:1rem;">Ready to Land Your <span class="gradient-text">Dream Job?</span></h2>
+  <p style="color:var(--text-muted);margin-bottom:2rem;font-size:1.05rem;">Join thousands of developers who improved their interview skills with InterviewAI.</p>
+  <button class="btn btn-primary btn-lg" onclick="openModal('register')">🚀 Get Started Free</button>
+</section>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="nav-brand" style="font-size:1.1rem;">
+        <div class="logo-icon" style="width:30px;height:30px;font-size:0.9rem;">🎯</div>
+        InterviewAI
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" id="loginTab" onclick="switchTab('login')">Login</button>
+      <button class="tab-btn" id="registerTab" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <!-- Login Form -->
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" class="form-control" id="loginEmail" placeholder="you@example.com" required />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" class="form-control" id="loginPassword" placeholder="••••••••" required />
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" id="loginBtn">Login</button>
+    </form>
+
+    <!-- Register Form -->
+    <form id="registerForm" class="hidden" onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" class="form-control" id="regName" placeholder="John Doe" required />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" class="form-control" id="regEmail" placeholder="you@example.com" required />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" class="form-control" id="regPassword" placeholder="Min 6 characters" required minlength="6" />
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" id="registerBtn">Create Account</button>
+    </form>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="js/main.js"></script>
+</body>
+</html>
