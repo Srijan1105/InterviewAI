@@ -71,10 +71,10 @@ const FOLLOW_UP_TEMPLATES = [
 ];
 
 // ===== SPEECH RECOGNITION SETUP =====
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 function startVoiceInterview() {
-  if (!SpeechRecognition) {
+  if (!SR) {
     showToast('Speech recognition not supported. Please use Chrome.', 'error');
     return;
   }
@@ -160,7 +160,7 @@ function toggleRecording() {
 }
 
 function startRecording() {
-  recognition = new SpeechRecognition();
+  recognition = new SR();
   recognition.continuous = true;
   recognition.interimResults = true;
   recognition.lang = 'en-US';
