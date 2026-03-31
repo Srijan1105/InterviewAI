@@ -100,36 +100,74 @@
 </div>
 
 <!-- RESULTS SCREEN -->
-<div id="resultsScreen" class="hidden" style="max-width:700px;margin:3rem auto;padding:0 1.5rem;">
-  <div class="card">
-    <div style="text-align:center;margin-bottom:2rem;">
-      <div style="font-size:3rem;margin-bottom:0.5rem;">🎉</div>
-      <h2 style="font-size:1.8rem;font-weight:800;">Interview Complete!</h2>
-      <p class="text-muted">Here's your performance breakdown</p>
+<div id="resultsScreen" class="hidden" style="max-width:800px;margin:2rem auto;padding:0 1.5rem;">
+
+  <!-- Score Cards -->
+  <div class="card mb-3" style="text-align:center;">
+    <div style="font-size:2rem;margin-bottom:0.5rem;">🎉</div>
+    <h2 style="font-size:1.6rem;font-weight:800;margin-bottom:0.25rem;">Interview Complete!</h2>
+    <p class="text-muted mb-3">Here's your full AI-powered performance debrief</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;" id="scoreCards"></div>
+    <div class="mb-2">
+      <div class="score-bar-wrap"><div class="score-bar-label"><span>Technical Knowledge</span><span id="rTech">-</span></div><div class="score-bar-track"><div class="score-bar-fill" id="rTechBar" style="width:0%;background:var(--primary)"></div></div></div>
+      <div class="score-bar-wrap"><div class="score-bar-label"><span>Communication</span><span id="rComm">-</span></div><div class="score-bar-track"><div class="score-bar-fill" id="rCommBar" style="width:0%;background:var(--secondary)"></div></div></div>
+      <div class="score-bar-wrap"><div class="score-bar-label"><span>Confidence</span><span id="rConf">-</span></div><div class="score-bar-track"><div class="score-bar-fill" id="rConfBar" style="width:0%;background:var(--warning)"></div></div></div>
+    </div>
+    <p id="overallFeedback" class="text-muted" style="font-size:0.92rem;line-height:1.7;max-width:600px;margin:0 auto;"></p>
+  </div>
+
+  <!-- Loading debrief -->
+  <div id="debriefLoading" class="card mb-3" style="text-align:center;padding:2rem;">
+    <div style="font-size:2rem;margin-bottom:0.5rem;">🤖</div>
+    <p style="font-weight:600;">AI is generating your detailed debrief...</p>
+    <p class="text-muted" style="font-size:0.85rem;">Analyzing strengths, weaknesses, and personalized recommendations</p>
+    <div style="display:flex;justify-content:center;gap:6px;margin-top:1rem;">
+      <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+    </div>
+  </div>
+
+  <!-- Full Debrief (shown after AI responds) -->
+  <div id="fullDebrief" class="hidden">
+
+    <!-- Strengths & Weaknesses -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+      <div class="card">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--success);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.75rem;">✅ Strengths</div>
+        <div id="strengthsList"></div>
+      </div>
+      <div class="card">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--danger);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.75rem;">⚠️ Areas to Improve</div>
+        <div id="weaknessesList"></div>
+      </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem;" id="scoreCards">
+    <!-- Suggestions -->
+    <div class="card mb-3">
+      <div class="card-header"><h3>💡 Actionable Suggestions</h3></div>
+      <div id="suggestionsList"></div>
     </div>
 
-    <div class="mb-3">
-      <div class="score-bar-wrap">
-        <div class="score-bar-label"><span>Technical Knowledge</span><span id="rTech">-</span></div>
-        <div class="score-bar-track"><div class="score-bar-fill" id="rTechBar" style="width:0%;background:var(--primary)"></div></div>
+    <!-- Model Answer Comparison -->
+    <div class="card mb-3">
+      <div class="card-header">
+        <h3>🔍 Model Answer Comparison</h3>
+        <span class="text-muted" style="font-size:0.82rem;">See how top candidates answer</span>
       </div>
-      <div class="score-bar-wrap">
-        <div class="score-bar-label"><span>Communication</span><span id="rComm">-</span></div>
-        <div class="score-bar-track"><div class="score-bar-fill" id="rCommBar" style="width:0%;background:var(--secondary)"></div></div>
-      </div>
-      <div class="score-bar-wrap">
-        <div class="score-bar-label"><span>Confidence</span><span id="rConf">-</span></div>
-        <div class="score-bar-track"><div class="score-bar-fill" id="rConfBar" style="width:0%;background:var(--warning)"></div></div>
-      </div>
+      <div id="modelAnswers"></div>
     </div>
 
-    <div style="display:flex;gap:1rem;">
-      <button class="btn btn-primary" style="flex:1" onclick="resetInterview()">🔄 Practice Again</button>
-      <a href="progress.html" class="btn btn-secondary" style="flex:1;justify-content:center;">📊 View Progress</a>
+    <!-- Next Practice -->
+    <div class="card mb-3">
+      <div class="card-header"><h3>📚 Recommended Next Practice</h3></div>
+      <div id="nextPractice"></div>
     </div>
+
+  </div>
+
+  <!-- Actions -->
+  <div style="display:flex;gap:1rem;margin-top:1rem;">
+    <button class="btn btn-primary" style="flex:1" onclick="resetInterview()">🔄 Practice Again</button>
+    <a href="progress.html" class="btn btn-secondary" style="flex:1;justify-content:center;">📊 View Progress</a>
   </div>
 </div>
 

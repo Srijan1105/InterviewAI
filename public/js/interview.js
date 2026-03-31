@@ -211,8 +211,6 @@ function showResults(scores) {
   document.getElementById('chatScreen').classList.add('hidden');
   document.getElementById('resultsScreen').classList.remove('hidden');
 
-  const overall = ((scores.technical + scores.communication + scores.confidence) / 3).toFixed(1);
-
   document.getElementById('scoreCards').innerHTML = `
     <div style="text-align:center;background:rgba(108,99,255,0.1);border:1px solid rgba(108,99,255,0.3);border-radius:12px;padding:1.2rem;">
       <div style="font-size:2rem;font-weight:800;color:var(--primary)">${scores.technical}/10</div>
@@ -237,6 +235,137 @@ function showResults(scores) {
     document.getElementById('rCommBar').style.width = (scores.communication * 10) + '%';
     document.getElementById('rConfBar').style.width = (scores.confidence * 10) + '%';
   }, 100);
+
+  // Fetch AI debrief
+  fetchDebrief(scores);
+}
+
+async function fetchDebrief(scores) {
+  // Build conversation summary from chat messages
+  const messages = document.querySelectorAll('.message');
+  let summary = '';
+  messages.forEach(m => {
+    const role = m.classList.contains('user') ? 'Candidate' : 'Interviewer';
+    const text = m.querySelector('.message-bubble')?.textContent?.trim();
+    if (text) summary += `${role}: ${text.slice(0, 200)}\n`;
+  });
+
+  try {
+    const res = await fetch('/api/interview/analyze', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({
+        sessionId,
+        role: selectedRole,
+        scores,
+        conversationSummary: summary.slice(0, 3000)
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    renderDebrief(data);
+  } catch (e) {
+    // Fallback debrief
+    renderDebrief(generateFallbackDebrief(scores));
+  }
+}
+
+function generateFallbackDebrief(scores) {
+  const avg = (scores.technical + scores.communication + scores.confidence) / 3;
+  return {
+    overallFeedback: avg >= 7
+      ? 'Strong performance overall. You demonstrated good knowledge and communicated clearly. Focus on the areas below to reach the next level.'
+      : avg >= 5
+      ? 'Decent performance with room for improvement. Review the suggestions below and practice regularly to build confidence.'
+      : 'This interview highlighted some key areas to work on. Don\'t be discouraged — focused practice on the topics below will make a big difference.',
+    strengths: [
+      { point: 'Attempted all questions', detail: 'You engaged with every question rather than skipping.' },
+      { point: 'Communication effort', detail: 'You made an effort to articulate your thoughts clearly.' },
+      { point: 'Role awareness', detail: 'You showed understanding of the role requirements.' }
+    ],
+    weaknesses: [
+      { point: 'Depth of technical answers', detail: 'Some answers lacked specific examples or deeper technical detail.' },
+      { point: 'Structured responses', detail: 'Using STAR method would make answers more compelling.' },
+      { point: 'Confidence in delivery', detail: 'More preparation will help you answer with greater conviction.' }
+    ],
+    suggestions: [
+      { area: 'Use STAR Method', action: 'Structure every behavioral answer: Situation → Task → Action → Result.' },
+      { area: 'Practice out loud', action: 'Record yourself answering common questions and review the recordings.' },
+      { area: 'Study role-specific topics', action: 'Review the core concepts for your target role daily.' },
+      { area: 'Mock interviews', action: 'Do at least 3 mock interviews per week to build fluency.' }
+    ],
+    modelAnswerComparison: [
+      { topic: 'Tell me about yourself', candidateApproach: 'General overview provided', idealApproach: 'Lead with your strongest achievement, then connect your background to the role in 60-90 seconds.' },
+      { topic: 'Technical knowledge', candidateApproach: 'Basic concepts covered', idealApproach: 'Strong candidates give concrete examples with metrics: "I improved API response time by 40% by implementing caching."' }
+    ],
+    nextPractice: [
+      { topic: 'System Design Fundamentals', reason: 'Critical for senior roles', resource: 'Study scalability, load balancing, and database design patterns.' },
+      { topic: 'Data Structures & Algorithms', reason: 'Core technical interview topic', resource: 'Practice on LeetCode — focus on arrays, trees, and dynamic programming.' },
+      { topic: 'Behavioral Questions', reason: 'Often underestimated', resource: 'Prepare 5 STAR stories covering leadership, conflict, failure, and success.' }
+    ]
+  };
+}
+
+function renderDebrief(data) {
+  document.getElementById('debriefLoading').classList.add('hidden');
+  document.getElementById('fullDebrief').classList.remove('hidden');
+
+  if (data.overallFeedback) {
+    document.getElementById('overallFeedback').textContent = data.overallFeedback;
+  }
+
+  // Strengths
+  document.getElementById('strengthsList').innerHTML = (data.strengths || []).map(s => `
+    <div style="display:flex;gap:8px;margin-bottom:0.6rem;font-size:0.88rem;">
+      <span style="color:var(--success);flex-shrink:0;">✔</span>
+      <div><div style="font-weight:600;">${s.point}</div><div style="color:var(--text-muted);font-size:0.82rem;">${s.detail}</div></div>
+    </div>
+  `).join('');
+
+  // Weaknesses
+  document.getElementById('weaknessesList').innerHTML = (data.weaknesses || []).map(w => `
+    <div style="display:flex;gap:8px;margin-bottom:0.6rem;font-size:0.88rem;">
+      <span style="color:var(--danger);flex-shrink:0;">✖</span>
+      <div><div style="font-weight:600;">${w.point}</div><div style="color:var(--text-muted);font-size:0.82rem;">${w.detail}</div></div>
+    </div>
+  `).join('');
+
+  // Suggestions
+  document.getElementById('suggestionsList').innerHTML = (data.suggestions || []).map(s => `
+    <div style="display:flex;gap:10px;align-items:flex-start;background:var(--bg2);border-radius:10px;padding:0.9rem;margin-bottom:0.5rem;">
+      <span style="color:var(--primary);font-size:1rem;flex-shrink:0;">→</span>
+      <div><div style="font-weight:600;font-size:0.88rem;">${s.area}</div><div style="color:var(--text-muted);font-size:0.83rem;margin-top:2px;">${s.action}</div></div>
+    </div>
+  `).join('');
+
+  // Model Answer Comparison
+  document.getElementById('modelAnswers').innerHTML = (data.modelAnswerComparison || []).map(m => `
+    <div style="background:var(--bg2);border-radius:10px;padding:1rem;margin-bottom:0.75rem;">
+      <div style="font-weight:700;font-size:0.88rem;margin-bottom:0.6rem;color:var(--primary);">📌 ${m.topic}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+        <div style="background:rgba(255,101,132,0.08);border:1px solid rgba(255,101,132,0.2);border-radius:8px;padding:0.75rem;">
+          <div style="font-size:0.72rem;font-weight:700;color:var(--danger);margin-bottom:4px;">YOUR APPROACH</div>
+          <div style="font-size:0.83rem;color:var(--text-muted);">${m.candidateApproach}</div>
+        </div>
+        <div style="background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.2);border-radius:8px;padding:0.75rem;">
+          <div style="font-size:0.72rem;font-weight:700;color:var(--success);margin-bottom:4px;">IDEAL APPROACH</div>
+          <div style="font-size:0.83rem;color:var(--text-muted);">${m.idealApproach}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // Next Practice
+  document.getElementById('nextPractice').innerHTML = (data.nextPractice || []).map((p, i) => `
+    <div style="display:flex;gap:12px;align-items:flex-start;padding:0.9rem;background:var(--bg2);border-radius:10px;margin-bottom:0.5rem;">
+      <div style="width:28px;height:28px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:800;flex-shrink:0;">${i + 1}</div>
+      <div>
+        <div style="font-weight:700;font-size:0.88rem;">${p.topic}</div>
+        <div style="font-size:0.82rem;color:var(--text-muted);margin-top:2px;">${p.reason}</div>
+        <div style="font-size:0.8rem;color:var(--primary);margin-top:4px;">📖 ${p.resource}</div>
+      </div>
+    </div>
+  `).join('');
 }
 
 function handleKey(e) {

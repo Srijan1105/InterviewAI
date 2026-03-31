@@ -5,6 +5,7 @@
     { "source": "/api/auth/login", "destination": "/api/auth/login" },
     { "source": "/api/interview/chat", "destination": "/api/interview/chat" },
     { "source": "/api/interview/sessions", "destination": "/api/interview/sessions" },
+    { "source": "/api/interview/analyze", "destination": "/api/interview/analyze" },
     { "source": "/api/resume/upload", "destination": "/api/resume/upload" },
     { "source": "/api/ats/check", "destination": "/api/ats/check" },
     { "source": "/api/progress", "destination": "/api/progress/index" },
