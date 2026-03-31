@@ -80,7 +80,12 @@
       <h3>Role-Based Prep</h3>
       <p>Choose your target role — Software Dev, Data Scientist, ML Engineer — and get tailored questions.</p>
     </a>
-    <a href="ats.html">ATS Checker</a>
+    <a href="ats.html" class="feature-card" onclick="requireAuth(event, 'ats.html')">
+      <div class="feature-icon" style="background:rgba(0,212,170,0.15)">📊</div>
+      <h3>ATS Score Checker</h3>
+      <p>Upload your resume and get an ATS compatibility score with suggestions to improve it.</p>
+      <span class="badge badge-new">NEW</span>
+    </a>
     <a href="coding.html" class="feature-card" onclick="requireAuth(event, 'coding.html')">
       <div class="feature-icon" style="background:rgba(108,99,255,0.15)">💻</div>
       <h3>Coding Interview</h3>
@@ -92,6 +97,12 @@
       <h3>Voice Interview</h3>
       <p>Speak your answers aloud and get AI evaluation on your communication and confidence.</p>
       <span class="badge badge-hot">⭐ IMPRESSIVE</span>
+    </a>
+    <a href="fullinterview.html" class="feature-card" onclick="requireAuth(event, 'fullinterview.html')">
+      <div class="feature-icon" style="background:rgba(255,101,132,0.15)">🎬</div>
+      <h3>Full Interview Simulation</h3>
+      <p>Coding + Technical + Managerial + HR in one session with camera, mic, and AI debrief.</p>
+      <span class="badge badge-hot">⭐ PREMIUM</span>
     </a>
   </div>
 </section>
