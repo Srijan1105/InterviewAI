@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ATS Score Checker - InterviewAI</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+  <style>
+    .ats-score-ring {
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem;
+      position: relative;
+      font-weight: 800;
+    }
+    .score-num { font-size: 2.8rem; line-height: 1; }
+    .score-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+
+    .ats-section { margin-bottom: 1.5rem; }
+    .ats-section-title {
+      font-size: 0.82rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--text-muted); margin-bottom: 0.75rem;
+    }
+    .suggestion-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.9rem 1rem;
+      margin-bottom: 0.5rem; font-size: 0.88rem; line-height: 1.6;
+    }
+    .suggestion-item.critical { border-left: 3px solid var(--danger); }
+    .suggestion-item.warning  { border-left: 3px solid var(--warning); }
+    .suggestion-item.good     { border-left: 3px solid var(--success); }
+    .suggestion-icon { font-size: 1rem; flex-shrink: 0; margin-top: 2px; }
+
+    .keyword-chip {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 50px; font-size: 0.78rem; font-weight: 600;
+      margin: 3px;
+    }
+    .keyword-found { background: rgba(0,212,170,0.15); color: var(--success); border: 1px solid rgba(0,212,170,0.3); }
+    .keyword-missing { background: rgba(255,101,132,0.15); color: var(--danger); border: 1px solid rgba(255,101,132,0.3); }
+
+    .category-score {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 0.75rem;
+    }
+    .category-score .cat-label { font-size: 0.88rem; width: 160px; flex-shrink: 0; }
+    .category-score .cat-bar-track {
+      flex: 1; height: 8px; background: var(--bg2);
+      border-radius: 4px; overflow: hidden;
+    }
+    .category-score .cat-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+    .category-score .cat-val { font-size: 0.82rem; font-weight: 700; width: 40px; text-align: right; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand"><div class="logo-icon">🎯</div>InterviewAI</div>
+  <div class="nav-links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="interview.html">Mock Interview</a>
+    <a href="resume.html">Resume</a>
+    <a href="ats.html" class="active">ATS Checker</a>
+    <a href="coding.html">Coding Interview</a>
+    <a href="voice.html">Voice</a>
+    <a href="progress.html">Progress</a>
+  </div>
+  <div class="nav-actions">
+    <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<div style="max-width:900px;margin:2rem auto;padding:0 1.5rem;">
+  <div style="margin-bottom:2rem;">
+    <h1 style="font-size:1.8rem;font-weight:800;margin-bottom:0.4rem;">📊 ATS Score Checker</h1>
+    <p class="text-muted">Upload your resume to get an ATS compatibility score and actionable improvement suggestions</p>
+  </div>
+
+  <!-- UPLOAD SECTION -->
+  <div id="uploadSection">
+    <div class="card mb-3">
+      <div class="upload-zone" id="uploadZone"
+        onclick="document.getElementById('atsFileInput').click()"
+        ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+        <div class="upload-icon">📄</div>
+        <h3>Drop your resume here</h3>
+        <p>or click to browse — PDF files only, max 5MB</p>
+        <input type="file" id="atsFileInput" accept=".pdf" class="hidden" onchange="handleFileSelect(event)" />
+      </div>
+
+      <div id="filePreview" class="hidden mt-2">
+        <div style="display:flex;align-items:center;gap:1rem;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1rem;">
+          <div style="font-size:2rem;">📄</div>
+          <div style="flex:1;">
+            <div id="atsFileName" style="font-weight:600;"></div>
+            <div id="atsFileSize" class="text-muted" style="font-size:0.82rem;"></div>
+          </div>
+          <button onclick="clearFile()" style="background:rgba(255,101,132,0.15);color:var(--danger);border:1px solid rgba(255,101,132,0.3);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.82rem;">Remove</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional Job Description -->
+    <div class="card mb-3">
+      <div style="margin-bottom:0.75rem;">
+        <div style="font-weight:600;margin-bottom:4px;">Job Description <span style="color:var(--text-muted);font-weight:400;font-size:0.85rem;">(optional but improves accuracy)</span></div>
+        <p class="text-muted" style="font-size:0.85rem;">Paste the job description to check keyword match against a specific role</p>
+      </div>
+      <textarea id="jobDesc" class="form-control" rows="5"
+        placeholder="Paste the job description here to get role-specific keyword analysis..."></textarea>
+    </div>
+
+    <button class="btn btn-primary btn-full btn-lg" id="checkBtn" onclick="checkATS()">
+      📊 Check ATS Score
+    </button>
+  </div>
+
+  <!-- RESULTS SECTION -->
+  <div id="resultsSection" class="hidden">
+
+    <!-- Overall Score -->
+    <div class="card mb-3" style="text-align:center;">
+      <div id="scoreRing" class="ats-score-ring">
+        <div class="score-num" id="overallScore">0</div>
+        <div class="score-label">ATS Score</div>
+      </div>
+      <h2 id="scoreVerdict" style="font-size:1.3rem;font-weight:700;margin-bottom:0.5rem;"></h2>
+      <p id="scoreDesc" class="text-muted" style="font-size:0.9rem;max-width:500px;margin:0 auto;"></p>
+    </div>
+
+    <!-- Category Breakdown -->
+    <div class="card mb-3">
+      <div class="card-header"><h3>Category Breakdown</h3></div>
+      <div id="categoryBreakdown"></div>
+    </div>
+
+    <div class="grid-2 mb-3">
+      <!-- Keywords Found -->
+      <div class="card">
+        <div class="ats-section-title">✅ Keywords Found</div>
+        <div id="keywordsFound"></div>
+      </div>
+      <!-- Keywords Missing -->
+      <div class="card">
+        <div class="ats-section-title">❌ Missing Keywords</div>
+        <div id="keywordsMissing"></div>
+      </div>
+    </div>
+
+    <!-- Suggestions -->
+    <div class="card mb-3">
+      <div class="card-header"><h3>🔧 Improvement Suggestions</h3></div>
+      <div id="suggestions"></div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:1rem;">
+      <button class="btn btn-secondary" style="flex:1" onclick="resetChecker()">🔄 Check Another Resume</button>
+      <a href="resume.html" class="btn btn-primary" style="flex:1;justify-content:center;">📝 Generate Interview Questions</a>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="loadingSection" class="hidden" style="text-align:center;padding:4rem 2rem;">
+    <div style="font-size:3rem;margin-bottom:1rem;">🔍</div>
+    <h3 style="margin-bottom:0.5rem;">Analyzing your resume...</h3>
+    <p class="text-muted">AI is checking ATS compatibility, keywords, formatting and more</p>
+    <div style="margin-top:1.5rem;display:flex;justify-content:center;gap:6px;">
+      <div class="typing-dot" style="width:10px;height:10px;background:var(--primary);border-radius:50%;animation:typing 1.2s infinite;"></div>
+      <div class="typing-dot" style="width:10px;height:10px;background:var(--primary);border-radius:50%;animation:typing 1.2s infinite;animation-delay:0.2s;"></div>
+      <div class="typing-dot" style="width:10px;height:10px;background:var(--primary);border-radius:50%;animation:typing 1.2s infinite;animation-delay:0.4s;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="js/main.js"></script>
+<script src="js/ats.js"></script>
+</body>
+</html>

@@ -6,6 +6,7 @@
     { "source": "/api/interview/chat", "destination": "/api/interview/chat" },
     { "source": "/api/interview/sessions", "destination": "/api/interview/sessions" },
     { "source": "/api/resume/upload", "destination": "/api/resume/upload" },
+    { "source": "/api/ats/check", "destination": "/api/ats/check" },
     { "source": "/api/progress", "destination": "/api/progress/index" },
     { "source": "/(.*)", "destination": "/public/$1" }
   ]
