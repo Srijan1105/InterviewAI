@@ -138,7 +138,7 @@
   <div id="setupScreen">
     <div style="text-align:center;margin-bottom:2rem;">
       <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.5rem;">🎬 Full Interview Simulation</h1>
-      <p class="text-muted">4 rounds in one session — HR → Technical → Managerial → Coding<br>Camera + Microphone on. Real interview experience.</p>
+      <p class="text-muted">4 rounds: Coding → Technical → Managerial → HR<br>Camera + Microphone on. AI follow-up questions. Real interview experience.</p>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;">
@@ -151,14 +151,6 @@
             <option>Web Developer</option>
             <option>Data Scientist</option>
             <option>ML Engineer</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Questions per Round</label>
-          <select class="form-control" id="setupQCount">
-            <option value="2">2 per round (Quick — 20 min)</option>
-            <option value="3" selected>3 per round (Standard — 30 min)</option>
-            <option value="4">4 per round (Full — 45 min)</option>
           </select>
         </div>
         <div class="form-group">
@@ -179,20 +171,20 @@
         <h3 style="margin-bottom:1rem;">Interview Rounds</h3>
         <div style="display:flex;flex-direction:column;gap:0.75rem;">
           <div style="display:flex;gap:12px;align-items:center;">
-            <div style="width:36px;height:36px;background:rgba(108,99,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">👤</div>
-            <div><div style="font-weight:600;font-size:0.9rem;">Round 1 — HR</div><div style="font-size:0.82rem;color:var(--text-muted);">Background, motivation, culture fit</div></div>
+            <div style="width:36px;height:36px;background:rgba(255,101,132,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">💻</div>
+            <div><div style="font-weight:600;font-size:0.9rem;">Round 1 — Coding</div><div style="font-size:0.82rem;color:var(--text-muted);">1 easy + 1 hard problem, changes every attempt</div></div>
           </div>
           <div style="display:flex;gap:12px;align-items:center;">
             <div style="width:36px;height:36px;background:rgba(0,212,170,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🧠</div>
-            <div><div style="font-weight:600;font-size:0.9rem;">Round 2 — Technical</div><div style="font-size:0.82rem;color:var(--text-muted);">Role-specific technical knowledge</div></div>
+            <div><div style="font-weight:600;font-size:0.9rem;">Round 2 — Technical</div><div style="font-size:0.82rem;color:var(--text-muted);">4-5 role-specific technical questions + AI follow-ups</div></div>
           </div>
           <div style="display:flex;gap:12px;align-items:center;">
             <div style="width:36px;height:36px;background:rgba(255,209,102,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📋</div>
-            <div><div style="font-weight:600;font-size:0.9rem;">Round 3 — Managerial</div><div style="font-size:0.82rem;color:var(--text-muted);">Leadership, conflict, decision-making</div></div>
+            <div><div style="font-weight:600;font-size:0.9rem;">Round 3 — Managerial</div><div style="font-size:0.82rem;color:var(--text-muted);">4-5 situational questions + AI follow-ups</div></div>
           </div>
           <div style="display:flex;gap:12px;align-items:center;">
-            <div style="width:36px;height:36px;background:rgba(255,101,132,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">💻</div>
-            <div><div style="font-weight:600;font-size:0.9rem;">Round 4 — Coding</div><div style="font-size:0.82rem;color:var(--text-muted);">Live coding problem with AI review</div></div>
+            <div style="width:36px;height:36px;background:rgba(108,99,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">👤</div>
+            <div><div style="font-weight:600;font-size:0.9rem;">Round 4 — HR</div><div style="font-size:0.82rem;color:var(--text-muted);">4-5 background & culture fit questions + AI follow-ups</div></div>
           </div>
         </div>
       </div>
@@ -204,10 +196,10 @@
 
     <!-- Round Progress -->
     <div class="round-steps" id="roundSteps">
-      <div class="round-step" id="step-0"><span class="step-icon">👤</span>HR</div>
+      <div class="round-step" id="step-0"><span class="step-icon">💻</span>Coding</div>
       <div class="round-step" id="step-1"><span class="step-icon">🧠</span>Technical</div>
       <div class="round-step" id="step-2"><span class="step-icon">📋</span>Managerial</div>
-      <div class="round-step" id="step-3"><span class="step-icon">💻</span>Coding</div>
+      <div class="round-step" id="step-3"><span class="step-icon">👤</span>HR</div>
     </div>
 
     <div style="display:grid;grid-template-columns:320px 1fr;gap:1.5rem;">
@@ -279,7 +271,7 @@
         <div id="codingPanel" class="hidden card" style="padding:0;overflow:hidden;">
           <div style="padding:0.6rem 1rem;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
             <span style="font-size:0.85rem;font-weight:600;">💻 Code Editor — JavaScript</span>
-            <button class="btn btn-success btn-sm" onclick="runSimCode()">▶ Run & Submit</button>
+            <button class="btn btn-success btn-sm" onclick="submitCodingAnswer()">▶ Submit Code</button>
           </div>
           <textarea id="simCodeEditor" spellcheck="false" placeholder="// Write your solution here..."></textarea>
         </div>
@@ -367,6 +359,7 @@
 
 <div class="toast-container" id="toastContainer"></div>
 <script src="js/main.js"></script>
+<script src="js/problems.js"></script>
 <script src="js/fullinterview.js"></script>
 </body>
 </html>
