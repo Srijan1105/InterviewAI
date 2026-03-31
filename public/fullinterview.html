@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Full Interview Simulation - InterviewAI</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ===== LAYOUT ===== */
+    .sim-page { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+
+    /* ===== ROUND BADGE ===== */
+    .round-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 14px; border-radius: 50px; font-size: 0.78rem; font-weight: 700;
+    }
+    .round-hr     { background:rgba(108,99,255,0.15); color:var(--primary); border:1px solid rgba(108,99,255,0.3); }
+    .round-tech   { background:rgba(0,212,170,0.15);  color:var(--secondary); border:1px solid rgba(0,212,170,0.3); }
+    .round-mgr    { background:rgba(255,209,102,0.15);color:var(--warning);  border:1px solid rgba(255,209,102,0.3); }
+    .round-coding { background:rgba(255,101,132,0.15);color:var(--danger);   border:1px solid rgba(255,101,132,0.3); }
+
+    /* ===== PROGRESS STEPS ===== */
+    .round-steps { display:flex; align-items:center; gap:0; margin-bottom:2rem; }
+    .round-step {
+      flex:1; text-align:center; padding:0.75rem 0.5rem;
+      border-bottom: 3px solid var(--border);
+      font-size:0.82rem; color:var(--text-muted); font-weight:600;
+      transition: all 0.3s; cursor:default;
+    }
+    .round-step.active { border-color:var(--primary); color:var(--primary); }
+    .round-step.done   { border-color:var(--success); color:var(--success); }
+    .round-step .step-icon { font-size:1.2rem; display:block; margin-bottom:4px; }
+
+    /* ===== VIDEO PANEL ===== */
+    .video-panel {
+      background: #000; border-radius: 12px; overflow: hidden;
+      position: relative; aspect-ratio: 16/9;
+    }
+    #userVideo { width:100%; height:100%; object-fit:cover; transform:scaleX(-1); }
+    .video-overlay {
+      position:absolute; bottom:0; left:0; right:0;
+      background:linear-gradient(transparent, rgba(0,0,0,0.7));
+      padding:1rem; display:flex; align-items:center; justify-content:space-between;
+    }
+    .video-controls { display:flex; gap:8px; }
+    .vid-btn {
+      width:38px; height:38px; border-radius:50%; border:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; font-size:1rem;
+      transition:all 0.2s;
+    }
+    .vid-btn.on  { background:rgba(255,255,255,0.2); color:white; }
+    .vid-btn.off { background:var(--danger); color:white; }
+    .rec-indicator {
+      display:flex; align-items:center; gap:6px;
+      font-size:0.78rem; color:white; font-weight:600;
+    }
+    .rec-dot { width:8px; height:8px; background:var(--danger); border-radius:50%; animation:blink 1s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* ===== WAVEFORM ===== */
+    .mini-wave { display:flex; align-items:center; gap:2px; height:24px; }
+    .mini-bar  { width:3px; background:var(--primary); border-radius:2px; height:4px; }
+    .mini-wave.active .mini-bar { animation:wave 0.8s infinite ease-in-out; }
+    .mini-bar:nth-child(1){animation-delay:0s}.mini-bar:nth-child(2){animation-delay:0.1s}
+    .mini-bar:nth-child(3){animation-delay:0.2s}.mini-bar:nth-child(4){animation-delay:0.3s}
+    .mini-bar:nth-child(5){animation-delay:0.2s}.mini-bar:nth-child(6){animation-delay:0.1s}
+    @keyframes wave { 0%,100%{height:4px} 50%{height:20px} }
+
+    /* ===== CHAT ===== */
+    .sim-chat { display:flex; flex-direction:column; height:340px; }
+    .sim-messages { flex:1; overflow-y:auto; padding:1rem; display:flex; flex-direction:column; gap:0.75rem; }
+    .sim-msg { display:flex; gap:10px; max-width:85%; animation:fadeInUp 0.3s ease; }
+    .sim-msg.user { align-self:flex-end; flex-direction:row-reverse; }
+    .sim-msg .avatar { width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0; }
+    .sim-msg.ai .avatar { background:linear-gradient(135deg,var(--primary),var(--secondary)); }
+    .sim-msg.user .avatar { background:var(--card2); }
+    .sim-msg .bubble { padding:10px 14px; border-radius:14px; font-size:0.88rem; line-height:1.6; }
+    .sim-msg.ai .bubble  { background:var(--card); border:1px solid var(--border); border-top-left-radius:4px; }
+    .sim-msg.user .bubble { background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:white; border-top-right-radius:4px; }
+
+    /* ===== CODE EDITOR ===== */
+    #simCodeEditor {
+      width:100%; height:200px; background:#1e1e2e; color:#cdd6f4;
+      border:none; padding:1rem; font-family:'Fira Code',monospace;
+      font-size:0.85rem; resize:none; border-radius:0 0 10px 10px;
+    }
+
+    /* ===== METRICS BAR ===== */
+    .live-metrics {
+      display:flex; gap:1rem; flex-wrap:wrap;
+      background:var(--bg2); border:1px solid var(--border);
+      border-radius:10px; padding:0.75rem 1rem;
+    }
+    .lm-item { display:flex; align-items:center; gap:6px; font-size:0.82rem; }
+    .lm-val  { font-weight:700; color:var(--text); }
+
+    /* ===== RESULTS ===== */
+    .round-score-card {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:12px; padding:1.2rem; text-align:center;
+    }
+    .round-score-card .rs-icon { font-size:1.8rem; margin-bottom:0.4rem; }
+    .round-score-card .rs-score { font-size:2rem; font-weight:800; }
+    .round-score-card .rs-label { font-size:0.78rem; color:var(--text-muted); margin-top:2px; }
+
+    .feedback-item {
+      display:flex; gap:10px; padding:0.85rem 1rem;
+      background:var(--bg2); border-radius:10px; margin-bottom:0.5rem;
+      font-size:0.88rem; line-height:1.6;
+    }
+    .feedback-item.pos { border-left:3px solid var(--success); }
+    .feedback-item.neg { border-left:3px solid var(--danger); }
+    .feedback-item.tip { border-left:3px solid var(--primary); }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-brand"><div class="logo-icon">🎯</div>InterviewAI</div>
+  <div class="nav-links">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="interview.html">Mock Interview</a>
+    <a href="fullinterview.html" class="active">Full Simulation</a>
+    <a href="ats.html">ATS Checker</a>
+    <a href="coding.html">Coding Interview</a>
+    <a href="voice.html">Voice</a>
+    <a href="progress.html">Progress</a>
+  </div>
+  <div class="nav-actions">
+    <button class="btn btn-secondary btn-sm" onclick="logout()">Logout</button>
+  </div>
+</nav>
+
+<div class="sim-page">
+
+  <!-- ===== SETUP ===== -->
+  <div id="setupScreen">
+    <div style="text-align:center;margin-bottom:2rem;">
+      <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.5rem;">🎬 Full Interview Simulation</h1>
+      <p class="text-muted">4 rounds in one session — HR → Technical → Managerial → Coding<br>Camera + Microphone on. Real interview experience.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;">
+      <div class="card">
+        <h3 style="margin-bottom:1rem;">Configure Your Interview</h3>
+        <div class="form-group">
+          <label>Target Role</label>
+          <select class="form-control" id="setupRole">
+            <option>Software Developer</option>
+            <option>Web Developer</option>
+            <option>Data Scientist</option>
+            <option>ML Engineer</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Questions per Round</label>
+          <select class="form-control" id="setupQCount">
+            <option value="2">2 per round (Quick — 20 min)</option>
+            <option value="3" selected>3 per round (Standard — 30 min)</option>
+            <option value="4">4 per round (Full — 45 min)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Camera & Microphone</label>
+          <div style="display:flex;gap:0.75rem;margin-top:6px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:0.88rem;cursor:pointer;">
+              <input type="checkbox" id="enableCamera" checked /> Enable Camera
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:0.88rem;cursor:pointer;">
+              <input type="checkbox" id="enableMic" checked /> Enable Microphone
+            </label>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-full btn-lg" onclick="startSimulation()">🚀 Start Full Interview</button>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom:1rem;">Interview Rounds</h3>
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+          <div style="display:flex;gap:12px;align-items:center;">
+            <div style="width:36px;height:36px;background:rgba(108,99,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">👤</div>
+            <div><div style="font-weight:600;font-size:0.9rem;">Round 1 — HR</div><div style="font-size:0.82rem;color:var(--text-muted);">Background, motivation, culture fit</div></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;">
+            <div style="width:36px;height:36px;background:rgba(0,212,170,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🧠</div>
+            <div><div style="font-weight:600;font-size:0.9rem;">Round 2 — Technical</div><div style="font-size:0.82rem;color:var(--text-muted);">Role-specific technical knowledge</div></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;">
+            <div style="width:36px;height:36px;background:rgba(255,209,102,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">📋</div>
+            <div><div style="font-weight:600;font-size:0.9rem;">Round 3 — Managerial</div><div style="font-size:0.82rem;color:var(--text-muted);">Leadership, conflict, decision-making</div></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;">
+            <div style="width:36px;height:36px;background:rgba(255,101,132,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">💻</div>
+            <div><div style="font-weight:600;font-size:0.9rem;">Round 4 — Coding</div><div style="font-size:0.82rem;color:var(--text-muted);">Live coding problem with AI review</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== INTERVIEW SCREEN ===== -->
+  <div id="interviewScreen" class="hidden">
+
+    <!-- Round Progress -->
+    <div class="round-steps" id="roundSteps">
+      <div class="round-step" id="step-0"><span class="step-icon">👤</span>HR</div>
+      <div class="round-step" id="step-1"><span class="step-icon">🧠</span>Technical</div>
+      <div class="round-step" id="step-2"><span class="step-icon">📋</span>Managerial</div>
+      <div class="round-step" id="step-3"><span class="step-icon">💻</span>Coding</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:320px 1fr;gap:1.5rem;">
+
+      <!-- LEFT: Video + Metrics -->
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <!-- Video -->
+        <div class="video-panel">
+          <video id="userVideo" autoplay muted playsinline></video>
+          <div id="noCamera" style="display:none;position:absolute;inset:0;background:var(--bg2);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.5rem;">
+            <div style="font-size:3rem;">👤</div>
+            <div style="font-size:0.85rem;color:var(--text-muted);">Camera off</div>
+          </div>
+          <div class="video-overlay">
+            <div class="rec-indicator"><div class="rec-dot"></div> REC</div>
+            <div class="video-controls">
+              <button class="vid-btn on" id="camBtn" onclick="toggleCamera()" title="Toggle Camera">📷</button>
+              <button class="vid-btn on" id="micBtn" onclick="toggleMic()" title="Toggle Mic">🎙️</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Round Info -->
+        <div class="card" style="padding:1rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+            <span id="currentRoundBadge" class="round-badge round-hr">👤 HR Round</span>
+            <span id="qProgress" class="text-muted" style="font-size:0.82rem;">Q 1/3</span>
+          </div>
+          <div style="font-size:0.82rem;color:var(--text-muted);" id="roundDesc">Background, motivation & culture fit</div>
+        </div>
+
+        <!-- Live Metrics -->
+        <div class="live-metrics">
+          <div class="lm-item">🚀 <span class="lm-val" id="lmWPM">—</span> wpm</div>
+          <div class="lm-item">🔴 <span class="lm-val" id="lmFillers">0</span> fillers</div>
+          <div class="lm-item">💪 <span class="lm-val" id="lmConf">—</span></div>
+          <div class="mini-wave" id="miniWave">
+            <div class="mini-bar"></div><div class="mini-bar"></div>
+            <div class="mini-bar"></div><div class="mini-bar"></div>
+            <div class="mini-bar"></div><div class="mini-bar"></div>
+          </div>
+        </div>
+
+        <!-- Transcript -->
+        <div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:4px;">Live Transcript</div>
+          <div id="simTranscript" style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:0.75rem;font-size:0.82rem;line-height:1.6;min-height:60px;max-height:100px;overflow-y:auto;color:var(--text-muted);">
+            Your speech will appear here...
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Chat + Input -->
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+
+        <!-- Chat -->
+        <div class="card" style="padding:0;overflow:hidden;flex:1;">
+          <div style="padding:0.75rem 1rem;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
+            <div style="width:32px;height:32px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:50%;display:flex;align-items:center;justify-content:center;">🤖</div>
+            <div>
+              <div style="font-weight:700;font-size:0.9rem;" id="interviewerName">AI Interviewer — HR</div>
+              <div style="font-size:0.75rem;color:var(--success);">● Online</div>
+            </div>
+          </div>
+          <div class="sim-messages" id="simMessages"></div>
+        </div>
+
+        <!-- Coding Panel (only in coding round) -->
+        <div id="codingPanel" class="hidden card" style="padding:0;overflow:hidden;">
+          <div style="padding:0.6rem 1rem;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:0.85rem;font-weight:600;">💻 Code Editor — JavaScript</span>
+            <button class="btn btn-success btn-sm" onclick="runSimCode()">▶ Run & Submit</button>
+          </div>
+          <textarea id="simCodeEditor" spellcheck="false" placeholder="// Write your solution here..."></textarea>
+        </div>
+
+        <!-- Input Area -->
+        <div id="voiceInputArea" style="display:flex;gap:10px;align-items:flex-end;">
+          <textarea id="simInput" class="chat-input" placeholder="Type your answer or use the mic..." rows="2"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendSimAnswer()}"></textarea>
+          <button class="vid-btn on" id="simMicBtn" onclick="toggleSimRecording()" style="width:44px;height:44px;background:var(--card);border:1px solid var(--border);">🎙️</button>
+          <button class="btn btn-primary" onclick="sendSimAnswer()" id="simSendBtn">Send ➤</button>
+        </div>
+
+        <div style="display:flex;gap:0.75rem;">
+          <button class="btn btn-secondary btn-sm" onclick="skipSimQuestion()">Skip Question</button>
+          <button class="btn btn-secondary btn-sm" onclick="endCurrentRound()">End Round →</button>
+          <button class="btn btn-secondary btn-sm" style="margin-left:auto;color:var(--danger);" onclick="endSimulation()">End Interview</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RESULTS ===== -->
+  <div id="resultsScreen" class="hidden">
+    <div style="text-align:center;margin-bottom:2rem;">
+      <div style="font-size:3rem;margin-bottom:0.5rem;">🏆</div>
+      <h1 style="font-size:2rem;font-weight:800;margin-bottom:0.4rem;">Full Interview Complete!</h1>
+      <p class="text-muted">Here's your comprehensive performance report across all 4 rounds</p>
+    </div>
+
+    <!-- Round Scores -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;" id="roundScores"></div>
+
+    <!-- Overall Score -->
+    <div class="card mb-3" style="text-align:center;">
+      <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:0.5rem;">OVERALL SCORE</div>
+      <div id="overallScoreNum" style="font-size:3.5rem;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;"></div>
+      <p id="overallVerdict" style="font-size:1rem;font-weight:600;margin-top:0.5rem;"></p>
+      <p id="overallSummary" class="text-muted" style="font-size:0.9rem;max-width:600px;margin:0.5rem auto 0;line-height:1.7;"></p>
+    </div>
+
+    <!-- Loading AI debrief -->
+    <div id="debriefLoading" class="card mb-3" style="text-align:center;padding:2rem;">
+      <div style="font-size:2rem;margin-bottom:0.5rem;">🤖</div>
+      <p style="font-weight:600;">AI is generating your detailed debrief...</p>
+      <div style="display:flex;justify-content:center;gap:6px;margin-top:1rem;">
+        <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+      </div>
+    </div>
+
+    <div id="fullDebrief" class="hidden">
+      <!-- Per-round feedback -->
+      <div id="roundFeedbacks" class="mb-3"></div>
+
+      <!-- Strengths & Weaknesses -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+        <div class="card">
+          <div style="font-size:0.78rem;font-weight:700;color:var(--success);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.75rem;">✅ Strengths</div>
+          <div id="strengthsList"></div>
+        </div>
+        <div class="card">
+          <div style="font-size:0.78rem;font-weight:700;color:var(--danger);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.75rem;">⚠️ Areas to Improve</div>
+          <div id="weaknessesList"></div>
+        </div>
+      </div>
+
+      <!-- Suggestions -->
+      <div class="card mb-3">
+        <div class="card-header"><h3>💡 How to Improve</h3></div>
+        <div id="suggestionsList"></div>
+      </div>
+
+      <!-- Next Practice -->
+      <div class="card mb-3">
+        <div class="card-header"><h3>📚 Recommended Practice</h3></div>
+        <div id="nextPractice"></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:1rem;">
+      <button class="btn btn-primary" style="flex:1" onclick="location.reload()">🔄 Practice Again</button>
+      <a href="dashboard.html" class="btn btn-secondary" style="flex:1;justify-content:center;">Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<script src="js/main.js"></script>
+<script src="js/fullinterview.js"></script>
+</body>
+</html>
