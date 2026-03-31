@@ -26,6 +26,7 @@ let lastUserAnswer = '';
 let followUpCount  = 0;
 let codingProblems = { easy: null, hard: null };
 let currentCodingProblem = 0; // 0=easy, 1=hard
+let simLang = 'javascript';
 
 // ===== FALLBACK QUESTIONS =====
 const FALLBACK = {
@@ -154,8 +155,29 @@ function showCodingProblem(idx) {
     </div>`;
 
   appendMsg('ai', `Problem ${idx+1} of 2 — ${label}<br>${problemHTML}Write your solution in the editor below and click "Submit Code".`);
-  document.getElementById('simCodeEditor').value = p.starterCode?.javascript || '// Write your solution here\n';
+  document.getElementById('simCodeEditor').value = getSimStarterCode(p);
   document.getElementById('simCodeEditor').placeholder = `// Solve: ${p.title}`;
+}
+
+function getSimStarterCode(p) {
+  if (!p?.starterCode) return getDefaultStarter();
+  return p.starterCode[simLang] || p.starterCode['javascript'] || getDefaultStarter();
+}
+
+function getDefaultStarter() {
+  const starters = {
+    javascript: '// Write your solution here\nfunction solution() {\n  \n}',
+    python:     '# Write your solution here\ndef solution():\n    pass',
+    java:       '// Write your solution here\nclass Solution {\n    public void solution() {\n        \n    }\n}',
+    cpp:        '// Write your solution here\n#include <bits/stdc++.h>\nusing namespace std;\n\nvoid solution() {\n    \n}'
+  };
+  return starters[simLang] || starters.javascript;
+}
+
+function changeSimLang() {
+  simLang = document.getElementById('simLangSelect').value;
+  const p = currentCodingProblem === 0 ? codingProblems.easy : codingProblems.hard;
+  if (p) document.getElementById('simCodeEditor').value = getSimStarterCode(p);
 }
 
 async function submitCodingAnswer() {
@@ -174,7 +196,7 @@ async function submitCodingAnswer() {
     const res = await fetch('/api/interview/chat', {
       method: 'POST', headers: authHeaders(),
       body: JSON.stringify({
-        message: `Review this JavaScript solution for "${p.title}":\n\`\`\`\n${code.slice(0,500)}\n\`\`\`\nComment on: correctness, time/space complexity, edge cases. Be concise (3-4 sentences).`,
+        message: `Review this ${simLang} solution for "${p.title}":\n\`\`\`\n${code.slice(0,500)}\n\`\`\`\nComment on: correctness, time/space complexity, edge cases. Be concise (3-4 sentences).`,
         sessionId, role, type: 'coding'
       })
     });

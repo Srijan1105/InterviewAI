@@ -271,7 +271,15 @@
         <!-- Coding Panel (only in coding round) -->
         <div id="codingPanel" class="hidden card" style="padding:0;overflow:hidden;">
           <div style="padding:0.6rem 1rem;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-            <span style="font-size:0.85rem;font-weight:600;">💻 Code Editor — JavaScript</span>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span style="font-size:0.85rem;font-weight:600;">💻 Code Editor</span>
+              <select id="simLangSelect" class="form-control" style="width:130px;padding:4px 8px;font-size:0.82rem;" onchange="changeSimLang()">
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+                <option value="java">Java</option>
+                <option value="cpp">C++</option>
+              </select>
+            </div>
             <button class="btn btn-success btn-sm" onclick="submitCodingAnswer()">▶ Submit Code</button>
           </div>
           <textarea id="simCodeEditor" spellcheck="false" placeholder="// Write your solution here..."></textarea>
